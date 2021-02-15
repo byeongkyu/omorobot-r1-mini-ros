@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<robot name="omorobot_r1_mini" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:include filename="$(find omorobot_r1_mini_description)/urdf/inertia_macro.urdf.xacro"/>
+    <xacro:include filename="$(find omorobot_r1_mini_description)/urdf/insert_transmission.urdf.xacro"/>
+    <xacro:include filename="$(find omorobot_r1_mini_description)/urdf/gazebo.urdf.xacro"/>
+    <xacro:include filename="$(find omorobot_r1_mini_description)/urdf/mobile_base.urdf.xacro"/>
+
+
+    <link name="base_footprint"/>
+
+    <xacro:insert_mobile_base parent="base_footprint">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </xacro:insert_mobile_base>
+</robot>

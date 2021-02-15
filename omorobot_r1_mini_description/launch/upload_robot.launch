@@ -1,0 +1,4 @@
+<launch>
+    <param name="robot_description" command="$(find xacro)/xacro $(find omorobot_r1_mini_description)/urdf/robot.urdf.xacro"/>
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher"/>
+</launch>
