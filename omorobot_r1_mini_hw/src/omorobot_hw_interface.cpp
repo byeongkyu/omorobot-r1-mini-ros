@@ -104,12 +104,16 @@ void OMORobotHWInterface::read(const ros::Time& time, const ros::Duration& perio
 {
     boost::mutex::scoped_lock scoped_lock(lock);
 
+    ROS_INFO("read start...");
+
     serial_port_->Write("$qENCOD\r\n");
 
     std::string recv_msg;
     serial_port_->ReadLine(recv_msg);
     std::vector<std::string> recv_msg_arr;
     boost::algorithm::split(recv_msg_arr, recv_msg, boost::is_any_of(","));
+
+    ROS_INFO("read mid [%s]...", recv_msg.c_str());
 
     int32_t current_enc[2] = {0, 0};
     current_enc[0] = atoi(recv_msg_arr[1].c_str());
@@ -118,14 +122,16 @@ void OMORobotHWInterface::read(const ros::Time& time, const ros::Duration& perio
     joint_eff_[0] = 0.0;
     joint_eff_[1] = 0.0;
 
-    joint_vel_[0] = (current_enc[0] - last_encoder_value_[0]) / 44.0 * (1.0 / period.toSec()) * (2.0 * M_PI) / 21.3;
-    joint_vel_[1] = (current_enc[0] - last_encoder_value_[0]) / 44.0 * (1.0 / period.toSec()) * (2.0 * M_PI) / 21.3;
+    joint_vel_[0] = (current_enc[0] - last_encoder_value_[0]) / 44.0 * (1.0 / period.toSec()) * (2.0 * M_PI) / 21.3 * -1.0;
+    joint_vel_[1] = (current_enc[1] - last_encoder_value_[1]) / 44.0 * (1.0 / period.toSec()) * (2.0 * M_PI) / 21.3 * -1.0;
 
-    joint_pos_[0] += (current_enc[0] - last_encoder_value_[0]) / 44.0 / 21.3 * (2.0 * M_PI);
-    joint_pos_[1] += (current_enc[0] - last_encoder_value_[0]) / 44.0 / 21.3 * (2.0 * M_PI);
+    joint_pos_[0] += (current_enc[0] - last_encoder_value_[0]) / 44.0 / 21.3 * (2.0 * M_PI) * -1.0;
+    joint_pos_[1] += (current_enc[1] - last_encoder_value_[1]) / 44.0 / 21.3 * (2.0 * M_PI) * -1.0;
 
     last_encoder_value_[0] = current_enc[0];
     last_encoder_value_[1] = current_enc[1];
+
+    ROS_INFO("read done...");
 }
 
 void OMORobotHWInterface::write(const ros::Time& time, const ros::Duration& period)
@@ -133,11 +139,12 @@ void OMORobotHWInterface::write(const ros::Time& time, const ros::Duration& peri
     // input joint_cmd_[0], joint_cmd_[1] -> rad/s
     // input data to motor driver -> rpm
 
-    int16_t l_vel = (int16_t)((joint_cmd_[0] * 60.0 / (2.0 * M_PI) * 21.3));
-    int16_t r_vel = (int16_t)((joint_cmd_[1] * 60.0 / (2.0 * M_PI) * 21.3));
+    int16_t l_vel = (int16_t)((joint_cmd_[0] * 60.0 / (2.0 * M_PI) * 1.0) * -1.0);
+    int16_t r_vel = (int16_t)((joint_cmd_[1] * 60.0 / (2.0 * M_PI) * 1.0) * -1.0);
 
     boost::format msg =  boost::format("$cRPM,%1%,%2%\r\n") % l_vel % r_vel;
     std::string send_str = msg.str();
+    ROS_INFO("%s", send_str.c_str());
 
     serial_port_->Write(send_str);
 }
