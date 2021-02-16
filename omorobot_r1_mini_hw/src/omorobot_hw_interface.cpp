@@ -103,17 +103,12 @@ bool OMORobotHWInterface::init(ros::NodeHandle& nh, ros::NodeHandle& pnh)
 void OMORobotHWInterface::read(const ros::Time& time, const ros::Duration& period)
 {
     boost::mutex::scoped_lock scoped_lock(lock);
-
-    ROS_INFO("read start...");
-
     serial_port_->Write("$qENCOD\r\n");
 
     std::string recv_msg;
     serial_port_->ReadLine(recv_msg);
     std::vector<std::string> recv_msg_arr;
     boost::algorithm::split(recv_msg_arr, recv_msg, boost::is_any_of(","));
-
-    ROS_INFO("read mid [%s]...", recv_msg.c_str());
 
     int32_t current_enc[2] = {0, 0};
     current_enc[0] = atoi(recv_msg_arr[1].c_str());
@@ -130,8 +125,6 @@ void OMORobotHWInterface::read(const ros::Time& time, const ros::Duration& perio
 
     last_encoder_value_[0] = current_enc[0];
     last_encoder_value_[1] = current_enc[1];
-
-    ROS_INFO("read done...");
 }
 
 void OMORobotHWInterface::write(const ros::Time& time, const ros::Duration& period)
@@ -144,8 +137,6 @@ void OMORobotHWInterface::write(const ros::Time& time, const ros::Duration& peri
 
     boost::format msg =  boost::format("$cRPM,%1%,%2%\r\n") % l_vel % r_vel;
     std::string send_str = msg.str();
-    ROS_INFO("%s", send_str.c_str());
-
     serial_port_->Write(send_str);
 }
 
