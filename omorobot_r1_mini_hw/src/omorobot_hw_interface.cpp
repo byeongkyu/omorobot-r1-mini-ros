@@ -1,6 +1,7 @@
 #include "omorobot_r1_mini_hw/omorobot_hw_interface.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
+#include "angles/angles.h"
 
 
 OMORobotHWInterface::OMORobotHWInterface()
@@ -73,6 +74,31 @@ bool OMORobotHWInterface::init(ros::NodeHandle& nh, ros::NodeHandle& pnh)
 
 
     // hardware_interface
+    // IMU
+    std::fill(std::begin(orientation_), std::begin(orientation_) + 4, 0.0);
+    std::fill(std::begin(angular_vel_), std::begin(angular_vel_) + 3, 0.0);
+    std::fill(std::begin(linear_accel_), std::begin(linear_accel_) + 3, 0.0);
+    std::fill(std::begin(orientation_cov_), std::begin(orientation_cov_) + 9, 0.0);
+    std::fill(std::begin(angular_vel_cov_), std::begin(angular_vel_cov_) + 9, 0.0);
+    std::fill(std::begin(linear_accel__cov_), std::begin(linear_accel__cov_) + 9, 0.0);
+
+    hardware_interface::ImuSensorHandle::Data data;
+
+    data.name = "imu_raw";
+    data.frame_id =  "imu_link";
+    data.orientation = orientation_;
+    data.angular_velocity = angular_vel_;
+    data.linear_acceleration = linear_accel_;
+    data.orientation_covariance = orientation_cov_;
+    data.angular_velocity_covariance = angular_vel_cov_;
+    data.linear_acceleration_covariance = linear_accel__cov_;
+
+    hardware_interface::ImuSensorHandle imu_sensor_handle = hardware_interface::ImuSensorHandle(data);
+    imu_sensor_interface_.registerHandle(imu_sensor_handle);
+
+    registerInterface(&imu_sensor_interface_);
+
+    // Joint States
     joint_cmd_.resize(2);
     for(int i = 0; i < joint_cmd_.size(); i++) {
         joint_cmd_[i] = 0.0;
@@ -88,7 +114,7 @@ bool OMORobotHWInterface::init(ros::NodeHandle& nh, ros::NodeHandle& pnh)
 
     registerInterface(&jnt_state_interface_);
 
-    // joint_velocity_interface
+    // Joint Command
     hardware_interface::JointHandle vel_handle_l_wheel(jnt_state_interface_.getHandle("l_wheel_joint"), &joint_cmd_[0]);
     jnt_vel_interface_.registerHandle(vel_handle_l_wheel);
     hardware_interface::JointHandle vel_handle_r_wheel(jnt_state_interface_.getHandle("r_wheel_joint"), &joint_cmd_[1]);
@@ -103,11 +129,13 @@ bool OMORobotHWInterface::init(ros::NodeHandle& nh, ros::NodeHandle& pnh)
 void OMORobotHWInterface::read(const ros::Time& time, const ros::Duration& period)
 {
     boost::mutex::scoped_lock scoped_lock(lock);
-    serial_port_->Write("$qENCOD\r\n");
 
     std::string recv_msg;
-    serial_port_->ReadLine(recv_msg);
     std::vector<std::string> recv_msg_arr;
+
+    serial_port_->Write("$qENCOD\r\n");
+    serial_port_->ReadLine(recv_msg);
+    ROS_DEBUG("ENCOD: %s", recv_msg.c_str());
     boost::algorithm::split(recv_msg_arr, recv_msg, boost::is_any_of(","));
 
     int32_t current_enc[2] = {0, 0};
@@ -125,6 +153,30 @@ void OMORobotHWInterface::read(const ros::Time& time, const ros::Duration& perio
 
     last_encoder_value_[0] = current_enc[0];
     last_encoder_value_[1] = current_enc[1];
+
+
+    orientation_[0] = 0.0;
+    orientation_[1] = 0.0;
+    orientation_[2] = 0.0;
+    orientation_[3] = 1.0;
+
+    serial_port_->Write("$qACCL\r\n");
+    serial_port_->ReadLine(recv_msg);
+    boost::algorithm::split(recv_msg_arr, recv_msg, boost::is_any_of(","));
+    ROS_DEBUG("ACCL: %f %f %f", atof(recv_msg_arr[1].c_str()), atof(recv_msg_arr[2].c_str()), atof(recv_msg_arr[3].c_str()));
+
+    linear_accel_[0] = atof(recv_msg_arr[1].c_str()) * 9.807;
+    linear_accel_[1] = atof(recv_msg_arr[2].c_str()) * 9.807;
+    linear_accel_[2] = atof(recv_msg_arr[3].c_str()) * 9.807;
+
+    serial_port_->Write("$qGYRO\r\n");
+    serial_port_->ReadLine(recv_msg);
+    boost::algorithm::split(recv_msg_arr, recv_msg, boost::is_any_of(","));
+    ROS_DEBUG("GYRO: %f %f %f", atof(recv_msg_arr[1].c_str()), atof(recv_msg_arr[2].c_str()), atof(recv_msg_arr[3].c_str()));
+
+    angular_vel_[0] = angles::from_degrees(atof(recv_msg_arr[1].c_str()));
+    angular_vel_[1] = angles::from_degrees(atof(recv_msg_arr[2].c_str()));
+    angular_vel_[2] = angles::from_degrees(atof(recv_msg_arr[3].c_str()));
 }
 
 void OMORobotHWInterface::write(const ros::Time& time, const ros::Duration& period)

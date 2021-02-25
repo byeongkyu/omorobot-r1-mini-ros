@@ -1,6 +1,8 @@
 <launch>
   <rosparam file="$(find omorobot_r1_mini_control)/config/controllers.yaml" command="load" />
   <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="true"
-                  output="screen" args="joint_state_controller base_controller">
+                  output="screen" args="joint_state_controller
+                                        base_controller
+                                        imu_sensor_controller">
         </node>
 </launch>

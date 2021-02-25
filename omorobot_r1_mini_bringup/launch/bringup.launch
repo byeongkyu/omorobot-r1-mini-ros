@@ -5,7 +5,7 @@
     <node name="omorobot_r1_mini_hw_node" type="omorobot_r1_mini_hw_node" pkg="omorobot_r1_mini_hw" output="screen" required="true">
         <param name="port_name" value="/dev/ttyTHS1"/>
         <param name="baudrate" value="115200"/>
-        <param name="rate" value="20"/>
+        <param name="rate" value="25"/>
     </node>
 
     <!-- Lidar -->
@@ -27,4 +27,14 @@
 
     <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser"
         args="0.0 0.0 0.1 0.0 0.0 0 base_link /laser_frame 40" />
+
+    <!-- IMU -->
+    <node name="imu_filter_node" pkg="imu_filter_madgwick" type="imu_filter_node" output="screen">
+        <param name="use_mag" value="false"/>
+        <param name="publish_tf" value="false"/>
+        <param name="gain" value="0.01"/>
+        <param name="zeta" value="0.0"/>
+        <remap from="imu/data_raw" to="imu_raw"/>
+        <remap from="imu/data" to="imu_filtered"/>
+    </node>
 </launch>
