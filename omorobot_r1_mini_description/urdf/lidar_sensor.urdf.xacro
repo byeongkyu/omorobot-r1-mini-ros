@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:macro name="insert_lidar_sensor" params="parent *origin sensor_name">
+
+        <xacro:if value="${sensor_name == 'ydlidar'}">
+            <link name="ydlidar_assy">
+                <visual>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <mesh filename="package://omorobot_r1_mini_description/meshes/ydlidar_assy.dae" scale="1 1 1"/>
+                    </geometry>
+                </visual>
+
+                <collision>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <mesh filename="package://omorobot_r1_mini_description/meshes/ydlidar_assy.dae" scale="1 1 1"/>
+                    </geometry>
+                </collision>
+
+                <inertial>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <mass value="0.5"/>
+                    <xacro:box_inertia m="0.5" x="0.154" y="0.130" z="0.04"/>
+                </inertial>
+            </link>
+
+            <joint name="ydlidar_assy_fixed" type="fixed">
+                <parent link="${parent}"/>
+                <child link="ydlidar_assy"/>
+                <xacro:insert_block name="origin"/>
+            </joint>
+
+            <link name="lidar_link"/>
+
+            <joint name="lidar_link_fixed" type="fixed">
+                <parent link="ydlidar_assy"/>
+                <child link="lidar_link"/>
+                <origin xyz="0.0005 0 0.046" rpy="0 0 0"/>
+            </joint>
+        </xacro:if>
+    </xacro:macro>
+
+</robot>

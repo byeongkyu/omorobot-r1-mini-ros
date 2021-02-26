@@ -4,16 +4,16 @@
     <xacro:macro name="insert_mobile_base" params="parent *origin">
         <link name="base_link">
             <visual>
-                <origin xyz="-0.0445 0 0" rpy="0 0 0"/>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
                 <geometry>
-                    <box size="0.154 0.130 0.04"/>
+                    <mesh filename="package://omorobot_r1_mini_description/meshes/body_assy.dae" scale="1 1 1"/>
                 </geometry>
             </visual>
 
             <collision>
-                <origin xyz="-0.0445 0 0" rpy="0 0 0"/>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
                 <geometry>
-                    <box size="0.154 0.130 0.04"/>
+                    <mesh filename="package://omorobot_r1_mini_description/meshes/body_assy.dae" scale="1 1 1"/>
                 </geometry>
             </collision>
 
@@ -30,63 +30,159 @@
             <xacro:insert_block name="origin"/>
         </joint>
 
-        <link name="l_wheel_link">
+        <xacro:macro name="insert_wheel" params="prefix dir">
+            <link name="${prefix}_wheel_link">
+                <visual>
+                    <origin xyz="0 0 0" rpy="0 0 ${dir*pi/2}"/>
+                    <geometry>
+                        <mesh filename="package://omorobot_r1_mini_description/meshes/wheel_assy.dae" scale="1 1 1"/>
+                    </geometry>
+                </visual>
+
+                <collision>
+                    <origin xyz="0 0 0" rpy="0 0 ${dir*pi/2}"/>
+                    <geometry>
+                        <mesh filename="package://omorobot_r1_mini_description/meshes/wheel_assy.dae" scale="1 1 1"/>
+                    </geometry>
+                </collision>
+
+                <inertial>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <mass value="0.1"/>
+                    <xacro:cylinder_inertia m="0.1" r="${0.065/2}" h="0.027"/>
+                </inertial>
+            </link>
+
+            <joint name="${prefix}_wheel_joint" type="continuous">
+                <parent link="base_link"/>
+                <child link="${prefix}_wheel_link"/>
+                <origin xyz="0 ${dir*0.0835} 0" rpy="0 0 0"/>
+                <axis xyz="0 1 0"/>
+            </joint>
+        </xacro:macro>
+
+        <xacro:insert_wheel prefix="l" dir="1"/>
+        <xacro:insert_wheel prefix="r" dir="-1"/>
+
+        <link name="housing_body">
             <visual>
-                <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
                 <geometry>
-                    <cylinder radius="${0.065/2}" length="0.027"/>
+                    <mesh filename="package://omorobot_r1_mini_description/meshes/housing_body.dae" scale="1 1 1"/>
                 </geometry>
             </visual>
 
             <collision>
-                <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
                 <geometry>
-                    <cylinder radius="${0.065/2}" length="0.027"/>
+                    <mesh filename="package://omorobot_r1_mini_description/meshes/housing_body.dae" scale="1 1 1"/>
                 </geometry>
             </collision>
 
             <inertial>
                 <origin xyz="0 0 0" rpy="0 0 0"/>
                 <mass value="0.1"/>
-                <xacro:cylinder_inertia m="0.1" r="${0.065/2}" h="0.027"/>
+                <xacro:box_inertia m="0.1" x="0.154" y="0.130" z="0.04"/>
             </inertial>
         </link>
 
-        <joint name="l_wheel_joint" type="continuous">
+        <joint name="housing_body_fixed" type="fixed">
             <parent link="base_link"/>
-            <child link="l_wheel_link"/>
-            <origin xyz="0 0.0835 0" rpy="0 0 0"/>
-            <axis xyz="0 1 0"/>
+            <child link="housing_body"/>
+            <origin xyz="0 0 0.01605" rpy="0 0 0"/>
         </joint>
 
-        <link name="r_wheel_link">
-            <visual>
-                <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
-                <geometry>
-                    <cylinder radius="${0.065/2}" length="0.027"/>
-                </geometry>
-            </visual>
+        <xacro:macro name="insert_caster_wheel" params="*origin">
+            <link name="caster_wheel_mount">
+                <visual>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <mesh filename="package://omorobot_r1_mini_description/meshes/caster_wheel_mount.dae" scale="1 1 1"/>
+                    </geometry>
+                </visual>
 
-            <collision>
-                <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
-                <geometry>
-                    <cylinder radius="${0.065/2}" length="0.027"/>
-                </geometry>
-            </collision>
+                <collision>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <mesh filename="package://omorobot_r1_mini_description/meshes/caster_wheel_mount.dae" scale="1 1 1"/>
+                    </geometry>
+                </collision>
 
-            <inertial>
-                <origin xyz="0 0 0" rpy="0 0 0"/>
-                <mass value="0.1"/>
-                <xacro:cylinder_inertia m="0.1" r="${0.065/2}" h="0.027"/>
-            </inertial>
-        </link>
+                <inertial>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <mass value="0.1"/>
+                    <xacro:cylinder_inertia m="0.1" r="${0.065/2}" h="0.027"/>
+                </inertial>
+            </link>
 
-        <joint name="r_wheel_joint" type="continuous">
-            <parent link="base_link"/>
-            <child link="r_wheel_link"/>
-            <origin xyz="0 -0.0835 0" rpy="0 0 0"/>
-            <axis xyz="0 1 0"/>
-        </joint>
+            <joint name="caster_wheel_mount_fixed" type="fixed">
+                <parent link="base_link"/>
+                <child link="caster_wheel_mount"/>
+                <xacro:insert_block name="origin"/>
+            </joint>
+
+            <link name="caster_wheel_rotate">
+                <visual>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <mesh filename="package://omorobot_r1_mini_description/meshes/caster_wheel_rotate.dae" scale="1 1 1"/>
+                    </geometry>
+                </visual>
+
+                <collision>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <mesh filename="package://omorobot_r1_mini_description/meshes/caster_wheel_rotate.dae" scale="1 1 1"/>
+                    </geometry>
+                </collision>
+
+                <inertial>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <mass value="0.1"/>
+                    <xacro:cylinder_inertia m="0.1" r="${0.065/2}" h="0.027"/>
+                </inertial>
+            </link>
+
+            <joint name="caster_wheel_rotate_joint" type="continuous">
+                <parent link="caster_wheel_mount"/>
+                <child link="caster_wheel_rotate"/>
+                <origin xyz="0 0 -0.011" rpy="0 0 0"/>
+                <axis xyz="0 0 1"/>
+            </joint>
+
+            <link name="caster_wheel">
+                <visual>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <mesh filename="package://omorobot_r1_mini_description/meshes/caster_wheel.dae" scale="1 1 1"/>
+                    </geometry>
+                </visual>
+
+                <collision>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <mesh filename="package://omorobot_r1_mini_description/meshes/caster_wheel.dae" scale="1 1 1"/>
+                    </geometry>
+                </collision>
+
+                <inertial>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <mass value="0.1"/>
+                    <xacro:cylinder_inertia m="0.1" r="${0.065/2}" h="0.027"/>
+                </inertial>
+            </link>
+
+            <joint name="caster_wheel_joint" type="continuous">
+                <parent link="caster_wheel_rotate"/>
+                <child link="caster_wheel"/>
+                <origin xyz="-0.0115 0 -0.0195" rpy="0 0 0"/>
+                <axis xyz="0 1 0"/>
+            </joint>
+        </xacro:macro>
+
+        <xacro:insert_caster_wheel>
+            <origin xyz="-0.10375 0 0.01425" rpy="0 0 0"/>
+        </xacro:insert_caster_wheel>
     </xacro:macro>
 
 </robot>
