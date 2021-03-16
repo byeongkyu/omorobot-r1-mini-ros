@@ -61,6 +61,7 @@
                 <origin xyz="0 ${dir*0.0835} 0" rpy="0 0 0"/>
                 <axis xyz="0 1 0"/>
             </joint>
+            <xacro:insert_velocity_transmission name="${prefix}_wheel_joint"/>
         </xacro:macro>
 
         <xacro:insert_wheel prefix="l" dir="1"/>

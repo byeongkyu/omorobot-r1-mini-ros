@@ -1,0 +1,4 @@
+<launch>
+    <include file="$(find omorobot_r1_mini_gazebo)/launch/bringup.launch"/>
+    <include file="$(find omorobot_r1_mini_control)/launch/bringup_controllers.launch"/>
+</launch>
