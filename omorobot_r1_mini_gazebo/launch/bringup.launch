@@ -1,0 +1,4 @@
+<launch>
+    <include file="$(find omorobot_r1_mini_gazebo)/launch/bringup_gazebo.launch"/>
+    <include file="$(find omorobot_r1_mini_gazebo)/launch/spawn_robot.launch"/>
+</launch>
