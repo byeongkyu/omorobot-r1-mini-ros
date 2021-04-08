@@ -1,4 +1,11 @@
 <launch>
     <include file="$(find omorobot_r1_mini_gazebo)/launch/bringup.launch"/>
-    <include file="$(find omorobot_r1_mini_control)/launch/bringup_controllers.launch"/>
+    <include file="$(find omorobot_r1_mini_control)/launch/bringup_controllers.launch">
+        <arg name="use_gazebo" value="true"/>
+    </include>
+
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" output="screen">
+        <rosparam param="source_list">[joint_states]</rosparam>
+        <param name="rate" value="100.0" />
+    </node>
 </launch>
