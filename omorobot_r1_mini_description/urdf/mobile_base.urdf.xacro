@@ -49,7 +49,7 @@
                 </collision>
 
                 <inertial>
-                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
                     <mass value="0.01"/>
                     <xacro:cylinder_inertia m="0.01" r="${0.065/2}" h="0.027"/>
                 </inertial>
@@ -189,6 +189,14 @@
         <xacro:insert_caster_wheel>
             <origin xyz="-0.10375 0 0.01425" rpy="0 0 0"/>
         </xacro:insert_caster_wheel>
+
+
+        <link name="imu_link"/>
+        <joint name="imu_link_fixed" type="fixed">
+            <parent link="base_link"/>
+            <child link="imu_link"/>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+        </joint>
     </xacro:macro>
 
 </robot>

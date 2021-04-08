@@ -1,8 +1,12 @@
 <launch>
+  <arg name="use_gazebo" default="false"/>
   <rosparam file="$(find omorobot_r1_mini_control)/config/controllers.yaml" command="load" />
   <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="true"
                   output="screen" args="joint_state_controller
-                                        base_controller
-                                        imu_sensor_controller">
-        </node>
+                                        base_controller">
+  </node>
+
+  <node name="controller_spawner_imu" pkg="controller_manager" type="spawner" respawn="true"
+                  output="screen" args="imu_sensor_controller" unless="$(arg use_gazebo)">
+  </node>
 </launch>

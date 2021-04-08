@@ -6,7 +6,6 @@ imu_sensor_controller:
   type: imu_sensor_controller/ImuSensorController
   publish_rate: 25
 
-
 base_controller:
   type        : "diff_drive_controller/DiffDriveController"
   left_wheel  : 'l_wheel_joint'
