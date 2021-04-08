@@ -1,0 +1,112 @@
+TebLocalPlannerROS:
+  odom_topic: odom
+
+  #Trajectory
+  teb_autosize: True
+  dt_ref: 0.4           #
+  dt_hysteresis: 0.01  # dt_ref 파라메터의 10% 값을 권장
+  min_samples: 3      # Default : 3, 궤적의 최소 샘플수
+  max_samples: 500    # 최대 샘플 수
+  global_plan_overwrite_orientation: True   # 글로벌 플랜이 자세를 덮어 쓰게 할 것인가
+
+  allow_init_with_backwards_motion: false  # 목표 지점이 로봇 뒤에 있는 경우 궤도를 후진 모션으로 설정
+                                          # 후방 감지 센서가 장착된 경우에만 권장
+
+  max_global_plan_lookahead_dist: 4.0   # Costmap의 사이즈로 지정
+  global_plan_viapoint_sep: 5.0
+  global_plan_prune_distance: 1
+  exact_arc_length: True   # True : 속도, 가속, 회전 속도 계산에서 정확한 arc 곡선을 사용하도록 함
+                          # Default : False, 유클리디언 근사법을 사용함
+  feasibility_check_no_poses: 2
+  publish_feedback: false
+
+  # Robot
+  max_vel_x: 0.5           # Default : 0.4 (m/s) 전진 주행 최대 속도
+  max_vel_x_backwards: 0.1 # Deafult : 0.2 (m/s) 후진 주행 최대 속도
+  max_vel_y: 0.0           # 반드시 0 (Non-holonomic-type robot)
+  max_vel_theta: 1.5       # Default : 0.3 (rad/s) 로봇의 최대 각속도
+  acc_lim_x: 1.0           # 선형 가속도
+  acc_lim_theta: 1.2       # 각 가속도
+  min_turning_radius: 0.0  # diff-drive robot (can turn on place!)
+
+  # Polygon Type (Fixed)
+  footprint_model:
+    type: "polygon"
+    vertices: [[-0.14, -0.11], [-0.14, 0.11], [0.04, 0.11], [0.04, -0.11]]
+
+  # GoalTolerance  (목표 허용 오차)
+  xy_goal_tolerance: 0.04   # Default : 0.2(m) 목표 위치까지의 최종 유클리드 거리
+  yaw_goal_tolerance: 0.05   # Default : 0.2(rad) 최종 허용 방향 오류
+  free_goal_vel: True   # 목표 속도 제한 조건 제거 여부
+  complete_global_plan: True
+
+  # Obstacles
+  min_obstacle_dist: 0.45 # 최소 장애물 분리 거리 (경로 생성 시 0.4m 이격해서 생성)
+  inflation_dist: 0.4
+  include_costmap_obstacles: True
+  costmap_obstacles_behind_robot_dist: 0.75 # 로봇 후방 경로 생성에 대한 장애물 거리 제한
+  obstacle_poses_affected: 15 # 15->30
+
+  dynamic_obstacle_inflation_dist: 0.6
+  include_dynamic_obstacles: false  # 움직이는 장애물을 고려
+
+  costmap_converter_plugin: ""
+  costmap_converter_spin_thread: True
+  costmap_converter_rate: 5
+
+  # # Optimization    (가중치)
+
+  no_inner_iterations: 5
+  no_outer_iterations: 4
+  optimization_activate: True
+  optimization_verbose: False
+  penalty_epsilon: 0.048          # lower value is lead to high performance when robot path to narrow space
+  obstacle_cost_exponent: 4
+  weight_max_vel_x: 2.1
+  weight_max_vel_theta: 1
+  weight_acc_lim_x: 1
+  weight_acc_lim_theta: 1
+  weight_kinematics_nh: 1000
+  weight_kinematics_forward_drive: 2
+  weight_kinematics_turning_radius: 1
+  weight_optimaltime: 1 # must be > 0
+  weight_shortest_path: 0.5
+  weight_obstacle: 100
+  weight_inflation: 0.2
+  weight_dynamic_obstacle: 15
+  weight_dynamic_obstacle_inflation: 0.3
+  weight_viapoint: 1
+  weight_adapt_factor: 2
+
+  # Homotopy Class Planner
+  enable_homotopy_class_planning: false
+  enable_multithreading: True
+  max_number_classes: 4
+  selection_cost_hysteresis: 1.0
+  selection_prefer_initial_plan: 0.9
+  selection_obst_cost_scale: 100.0
+  selection_viapoint_cost_scale: 1.0
+  selection_alternative_time_cost: False
+
+  roadmap_graph_no_samples: 15
+  roadmap_graph_area_width: 5
+  roadmap_graph_area_length_scale: 1.0
+  h_signature_prescaler: 0.5
+  h_signature_threshold: 0.1
+  obstacle_heading_threshold: 0.45
+  switching_blocking_period: 0.0
+  viapoints_all_candidates: True
+  delete_detours_backwards: True
+  max_ratio_detours_duration_best_duration: 3.0
+  visualize_hc_graph: True
+  visualize_with_time_as_z_axis_scale: True
+
+  # Recovery
+
+  shrink_horizon_backup: True
+  shrink_horizon_min_duration: 10
+  oscillation_recovery: True
+  oscillation_v_eps: 0.1
+  oscillation_omega_eps: 0.1
+  oscillation_recovery_min_duration: 11
+  oscillation_filter_duration: 10
