@@ -7,7 +7,7 @@ TebLocalPlannerROS:
   dt_hysteresis: 0.01  # dt_ref 파라메터의 10% 값을 권장
   min_samples: 3      # Default : 3, 궤적의 최소 샘플수
   max_samples: 500    # 최대 샘플 수
-  global_plan_overwrite_orientation: True   # 글로벌 플랜이 자세를 덮어 쓰게 할 것인가
+  global_plan_overwrite_orientation: true   # 글로벌 플랜이 자세를 덮어 쓰게 할 것인가
 
   allow_init_with_backwards_motion: false  # 목표 지점이 로봇 뒤에 있는 경우 궤도를 후진 모션으로 설정
                                           # 후방 감지 센서가 장착된 경우에만 권장
@@ -38,7 +38,7 @@ TebLocalPlannerROS:
   xy_goal_tolerance: 0.04   # Default : 0.2(m) 목표 위치까지의 최종 유클리드 거리
   yaw_goal_tolerance: 0.05   # Default : 0.2(rad) 최종 허용 방향 오류
   free_goal_vel: True   # 목표 속도 제한 조건 제거 여부
-  complete_global_plan: True
+  complete_global_plan: false
 
   # Obstacles
   min_obstacle_dist: 0.45 # 최소 장애물 분리 거리 (경로 생성 시 0.4m 이격해서 생성)
@@ -55,7 +55,6 @@ TebLocalPlannerROS:
   costmap_converter_rate: 5
 
   # # Optimization    (가중치)
-
   no_inner_iterations: 5
   no_outer_iterations: 4
   optimization_activate: True

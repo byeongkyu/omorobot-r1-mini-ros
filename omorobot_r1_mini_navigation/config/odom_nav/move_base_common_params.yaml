@@ -4,13 +4,13 @@ footprint_padding: 0.0
 
 # replanning
 controller_frequency: 20.0   # run controller at 5.0 Hz
-controller_patience: 15.0    # if the controller failed, clear obstacles and retry; after 15.0 s, abort and replan
+controller_patience: 2.0    # if the controller failed, clear obstacles and retry; after 15.0 s, abort and replan
 
 planner_frequency: 20.0       # don't continually replan (only when controller failed)
 planner_patience: 5.0        # if the first planning attempt failed, abort planning retries after 5.0 s...
 
-max_planning_retries: 10     # ... or after 10 attempts (whichever happens first)
-oscillation_timeout: 0.0    # abort controller and trigger recovery behaviors after 30.0 s
+max_planning_retries: 100     # ... or after 10 attempts (whichever happens first)
+oscillation_timeout: 2.0    # abort controller and trigger recovery behaviors after 30.0 s
 
 recovery_behavior_enabled: true
 recovery_behaviors: [
@@ -25,4 +25,4 @@ recovery_behaviors: [
 ]
 
 conservative_reset:
-  reset_distance: 2.0        # clear obstacles farther away than 3.0 m
+  reset_distance: 2.0        # clear obstacles farther away than 2.0m
